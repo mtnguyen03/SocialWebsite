@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SocialFrontEnd.Helper;
+using SocialFrontEnd.Services.MailService;
+using SocialFrontEnd.Services.OtpService;
 
 namespace SocialFrontEnd
 {
@@ -46,6 +48,13 @@ namespace SocialFrontEnd
       
             builder.Services.AddIdentity<User, IdentityRole>()
                             .AddEntityFrameworkStores<SocialDbContext>().AddDefaultTokenProviders();
+
+
+            //Mail settings
+            builder.Services.AddSingleton<IOtpService, OtpService>();
+            var mailSettings = builder.Configuration.GetSection("MailSettings");
+            builder.Services.Configure<MailSettings>(mailSettings);
+            builder.Services.AddTransient<ISendGmailService, SendGmailService>();
 
             builder.Services.AddAuthorization();
             builder.Services.AddControllersWithViews(); 

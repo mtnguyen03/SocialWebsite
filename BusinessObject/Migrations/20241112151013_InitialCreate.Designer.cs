@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(SocialDbContext))]
-    [Migration("20241111075702_InitialCreate")]
+    [Migration("20241112151013_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,13 +37,13 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
@@ -72,13 +72,13 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ReplyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
@@ -92,6 +92,31 @@ namespace BusinessObject.Migrations
                     b.ToTable("CommentReplys");
                 });
 
+            modelBuilder.Entity("BusinessObject.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("User1Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("User2Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("User1Id");
+
+                    b.HasIndex("User2Id");
+
+                    b.ToTable("Conversations");
+                });
+
             modelBuilder.Entity("BusinessObject.Gift", b =>
                 {
                     b.Property<int>("GiftId")
@@ -101,14 +126,12 @@ namespace BusinessObject.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GiftId"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GiftName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -131,7 +154,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LikeId"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PostId")
@@ -148,6 +171,71 @@ namespace BusinessObject.Migrations
                     b.ToTable("Likes");
                 });
 
+            modelBuilder.Entity("BusinessObject.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceiverId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("BusinessObject.Notification", b =>
+                {
+                    b.Property<int>("NotificationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationID"));
+
+                    b.Property<bool?>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MessageContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("NotificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Photo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("NotificationID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("BusinessObject.Post", b =>
                 {
                     b.Property<int>("PostId")
@@ -160,10 +248,10 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
@@ -186,7 +274,7 @@ namespace BusinessObject.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DisplayOrder")
+                    b.Property<int?>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
@@ -293,35 +381,35 @@ namespace BusinessObject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "90f86dfe-741f-4d15-b447-001f34adfc8e",
+                            Id = "29989f2a-6d3f-4f6c-b085-68335665a635",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "63c358bd-070d-473c-8fe9-1056bcd50863",
+                            ConcurrencyStamp = "5c105ba3-cd30-4ee4-bc2b-325b090a74cf",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FullName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEC0EcaAfuJv4MZFG7fbygknIUlSKjkcQaEPg1bCUUbIwhKIwNcqSSYr/RYRqyku3jQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKy4QeDzntlhwzvHBJJEb0baRTJGFYuhl3yjFUC4B3LXjV8Vnr6cXzP1TXU3wJO1aw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c9217927-5bbd-431c-af18-d92b6c10b2be",
+                            SecurityStamp = "472ebce9-03eb-4db4-ab8b-226d366bcc49",
                             TwoFactorEnabled = false,
                             UserName = "admin@example.com"
                         },
                         new
                         {
-                            Id = "a8cbe147-327d-4139-b803-82776be93248",
+                            Id = "e8e6e123-e178-4938-bfae-b30d90ad9eae",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "14a421e6-ba34-4f16-a653-3a52e06d9785",
+                            ConcurrencyStamp = "a5e23da6-b516-49c8-98a0-cce709e272c6",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FullName = "UserName",
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJEL1kIqMjQngrBg01NzsmH1groVu+9e/VJGWM/Fl7mmQP3KZXDYuvg31Bq7rJi0TQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFkO62U+ID5Jd3C5IEihGK2vRkzz5+zO9jhFzFMQinKrOUg0OUEw/M7aIqiZw3xxeQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "653adcef-acd4-456c-83fa-b37aed25b6f2",
+                            SecurityStamp = "5521965f-f0b2-4493-aba3-b8c53ff2943a",
                             TwoFactorEnabled = false,
                             UserName = "user@example.com"
                         });
@@ -356,13 +444,13 @@ namespace BusinessObject.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6373c761-40b5-463b-ac53-be26b8d86097",
+                            Id = "c2285a77-921a-4368-838c-55b4e4bc66c5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "1a9b3bbb-5a91-4dd5-a980-9b7af86665f5",
+                            Id = "dcd6bca4-a246-4158-bfa7-f425b58391b5",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -457,13 +545,13 @@ namespace BusinessObject.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "90f86dfe-741f-4d15-b447-001f34adfc8e",
-                            RoleId = "6373c761-40b5-463b-ac53-be26b8d86097"
+                            UserId = "29989f2a-6d3f-4f6c-b085-68335665a635",
+                            RoleId = "c2285a77-921a-4368-838c-55b4e4bc66c5"
                         },
                         new
                         {
-                            UserId = "a8cbe147-327d-4139-b803-82776be93248",
-                            RoleId = "1a9b3bbb-5a91-4dd5-a980-9b7af86665f5"
+                            UserId = "e8e6e123-e178-4938-bfae-b30d90ad9eae",
+                            RoleId = "dcd6bca4-a246-4158-bfa7-f425b58391b5"
                         });
                 });
 
@@ -504,13 +592,30 @@ namespace BusinessObject.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BusinessObject.Conversation", b =>
+                {
+                    b.HasOne("BusinessObject.User", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BusinessObject.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
+                });
+
             modelBuilder.Entity("BusinessObject.Gift", b =>
                 {
                     b.HasOne("BusinessObject.Post", "Post")
                         .WithMany("Gifts")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PostId");
 
                     b.HasOne("BusinessObject.User", "User")
                         .WithMany("Gifts")
@@ -528,6 +633,24 @@ namespace BusinessObject.Migrations
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BusinessObject.Message", b =>
+                {
+                    b.HasOne("BusinessObject.Conversation", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId");
+                });
+
+            modelBuilder.Entity("BusinessObject.Notification", b =>
+                {
+                    b.HasOne("BusinessObject.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BusinessObject.PostImage", b =>
@@ -595,6 +718,11 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Comment", b =>
                 {
                     b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("BusinessObject.Conversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("BusinessObject.Post", b =>

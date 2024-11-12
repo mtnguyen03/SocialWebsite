@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Reflection.Emit;
 
 namespace BusinessObject
 {
@@ -9,7 +10,6 @@ namespace BusinessObject
     {
         public SocialDbContext() { }
         public SocialDbContext(DbContextOptions<SocialDbContext> otp) : base(otp) { }
-
         public override DbSet<User> Users { get; set; }
         public virtual DbSet<Gift> Gifts { get; set; }
         public virtual DbSet<Like> Likes { get; set; }
@@ -17,10 +17,24 @@ namespace BusinessObject
         public virtual DbSet<CommentReply> CommentReplys { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<PostImage> PostImages { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
+        public virtual DbSet<Conversation> Conversations { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<Conversation>()
+                .HasOne(c => c.User1)
+                .WithMany()
+                .HasForeignKey(c => c.User1Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.User2)
+                .WithMany()
+                .HasForeignKey(c => c.User2Id)
+                .OnDelete(DeleteBehavior.Restrict); 
             // Add Admin Role
             var adminRoleId = Guid.NewGuid().ToString();
             var userRoleId = Guid.NewGuid().ToString();

@@ -8,13 +8,11 @@ namespace BusinessObject
 {
     public class PostImage
     {
-        public int PostImageId { get; set; }  // Unique ID for the image
-        public int PostId { get; set; }  // Reference to the post this image belongs to
-        public string ImageUrl { get; set; }  // URL or path to the image
-        public string? Description { get; set; }  // Optional description of the image
-        public int? DisplayOrder { get; set; }  // Optional, to control the order in which images appear
-
-        // Navigation property back to the post
+        public int PostImageId { get; set; } 
+        public int PostId { get; set; }  
+        public string ImageUrl { get; set; }  
+        public string? Description { get; set; } 
+        public int? DisplayOrder { get; set; } 
         public Post? Post { get; set; }
     }
 }

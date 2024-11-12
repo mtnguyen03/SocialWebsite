@@ -22,18 +22,14 @@ namespace BusinessObject
         [StringLength(250, ErrorMessage = "Address cannot be longer than 250 characters.")]
         [RegularExpression(@"^[\p{L}\p{M}\d\s,.-]+$", ErrorMessage = "Address cannot contain special characters other than letters, numbers, spaces, commas, periods, and dashes, and only one space between words is allowed.")]
         public string? Address { get; set; }
-
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]
         public DateTime? BirthDay { get; set; }
-
         [RegularExpression(@"^0\d{9}$", ErrorMessage = "Phone Number must contain 10 digits, start with 0, and not contain special characters or letters.")]
         public override string? PhoneNumber { get; set; }
-
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
         public DateTime? CreatedAt { get; set; }
-
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
         public DateTime? UpdatedAt { get; set; }
