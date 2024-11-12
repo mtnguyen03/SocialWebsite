@@ -67,9 +67,9 @@ namespace BookApi.Repositories
         {
             var user = new User
             {
-                FullName = model.FullName,  
+                FullName = model.FullName,
                 Email = model.Email,
-                UserName = model.Email
+                UserName = GenerateUsername(model.FullName)
 
             };
 
@@ -83,6 +83,17 @@ namespace BookApi.Repositories
                 await userManager.AddToRoleAsync(user, AppRole.User);
             }
             return result;
+        }
+
+        public static string GenerateUsername(string fullName)
+        {
+            string[] nameParts = fullName.Split(' ');
+
+
+            string baseUsername = nameParts[nameParts.Length - 1];
+            Random random = new Random();
+            int randomInt = random.Next(1000, 9999);
+            return $"{baseUsername}{randomInt}";
         }
     }
 }

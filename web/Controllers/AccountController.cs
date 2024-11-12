@@ -10,6 +10,9 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Azure;
 using BusinessObject.Authen;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using SocialFrontEnd.Services.MailService;
+using SocialFrontEnd.Services.OtpService;
 
 namespace SocialFrontEnd.Controllers
 {
@@ -18,20 +21,25 @@ namespace SocialFrontEnd.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IOtpService _otpService;
+        private readonly ISendGmailService _sendGmailService;
 
         // Constructor
-        public AccountController(UserManager<User> userManager
-            , SignInManager<User> signInManager
-            ,IHttpClientFactory httpClientFactory
-
-           )
+        public AccountController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IHttpClientFactory httpClientFactory,
+            IOtpService otpService,
+            ISendGmailService sendGmailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpClientFactory = httpClientFactory;
+            _otpService = otpService ?? throw new ArgumentNullException(nameof(otpService));
+            _sendGmailService = sendGmailService ?? throw new ArgumentNullException(nameof(sendGmailService));
         }
 
-      
+
         public IActionResult Login()
         {
             return View();
@@ -82,7 +90,7 @@ namespace SocialFrontEnd.Controllers
             return View();
         }
 
-        // GET: /Authen/SignUp
+
         public IActionResult SignUp()
         {
             return View();
@@ -92,6 +100,77 @@ namespace SocialFrontEnd.Controllers
         {
             return View();
         }
+
+        public IActionResult ResetPassword(string email)
+        {
+            var model = new ResetPasswordModel { Email = email };
+            return View(model);
+        }
+
+        public IActionResult CheckOtp(string email)
+        {
+            var model = new CheckOtpModel { Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckOtp(CheckOtpModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var isOtpValid = _otpService.ValidateOtp(model.Email, model.Otp);
+            if (!isOtpValid)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid OTP. Please try again.");
+                return View(model); 
+            }
+            return Redirect($"/Account/ResetPassword?email={model.Email}");
+          
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); 
+            }
+
+         
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User with this email does not exist.");
+                return View(model); 
+            }
+
+          
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (resetToken == null)
+            {
+                ModelState.AddModelError(string.Empty, "Failed to generate reset token.");
+                return View(model); 
+            }
+
+
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
+            if (!result.Succeeded) 
+            {
+                ModelState.AddModelError(string.Empty, "Failed to reset the password. Please try again.");
+                return Redirect($"/Account/ResetPassword?email={model.Email}");
+            }
+
+            // Use TempData to store the success message
+            TempData["SuccessMessage"] = "Password reset successful. Please log in with your new password.";
+
+            return RedirectToAction("Login", "Account");
+        }
+
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -105,7 +184,7 @@ namespace SocialFrontEnd.Controllers
                     return View();
                 }
 
-                // Create SignUpModel
+             
                 var signUpModel = new SignUpModel
                 {
                     FullName = fullName,
@@ -118,12 +197,12 @@ namespace SocialFrontEnd.Controllers
                 {
                     client.BaseAddress = new Uri("https://localhost:7055/api/Accounts/SignUp");
 
-                    // API call
+                
                     var response = await client.PostAsJsonAsync("SignUp", signUpModel);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // Handle success, you may want to redirect
+              
                         return RedirectToAction("Login", "Account");
                     }
                     else
@@ -151,18 +230,33 @@ namespace SocialFrontEnd.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-               
-                ViewBag.Message = "If an account with that email exists, a reset link has been sent.";
-                return View("ForgotPasswordConfirmation"); 
+                return View();
             }
 
-            return View(model);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User with this email does not exist.");
+                return View(model);
+            }
+
+            _otpService.GenerateOtp(model.Email, out var otp);
+
+            MailContent content = new MailContent
+            {
+                To = model.Email,
+                Subject = "OTP - Social",
+                Body = $"<h2>Mail from Social</h2>" +
+                $"Your OTP is: {otp}"
+            };
+
+            _sendGmailService.SendMail(content);
+
+            return Redirect($"/Account/CheckOtp?email={model.Email}");
         }
 
     }
-
-
 
 }
