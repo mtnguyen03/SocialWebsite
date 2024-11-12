@@ -8,7 +8,7 @@ using DataAccess.Helpers;
 
 namespace SocialFrontEnd.Controllers
 {
-    [Authorize(AppRole.User)]
+    //[Authorize(AppRole.User)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

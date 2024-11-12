@@ -88,6 +88,11 @@ namespace SocialFrontEnd.Controllers
             return View();
         }
 
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignUp(string fullName, string email, string password, string confirmPassword)
@@ -109,7 +114,6 @@ namespace SocialFrontEnd.Controllers
                     ConfirmPassword = confirmPassword
                 };
 
-                // Call the API to handle the registration
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri("https://localhost:7055/api/Accounts/SignUp");
@@ -131,8 +135,6 @@ namespace SocialFrontEnd.Controllers
             return View();
         }
 
-
-
         private void SetSession(string token, string username, string userEmail)
         {
             HttpContext.Session.SetString("JwtToken", token);
@@ -142,12 +144,25 @@ namespace SocialFrontEnd.Controllers
         public async Task<IActionResult> SignOut()
         {
             await _signInManager.SignOutAsync();
-
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Account");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+        {
+            if (ModelState.IsValid)
+            {
+               
+                ViewBag.Message = "If an account with that email exists, a reset link has been sent.";
+                return View("ForgotPasswordConfirmation"); 
+            }
+
+            return View(model);
+        }
+
     }
+
 
 
 }
