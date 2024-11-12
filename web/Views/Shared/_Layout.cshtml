@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/vendor/remixicon/fonts/remixicon.css">
     <link rel="stylesheet" href="~/vendor/vanillajs-datepicker/dist/css/datepicker.min.css">
     <link rel="stylesheet" href="~/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
 </head>
 <body class="  ">
     <!-- loader Start -->
@@ -330,5 +331,35 @@
     <!-- Wrapper End-->
          @await Html.PartialAsync("_footerPartial")
 @await RenderSectionAsync("Scripts", required: false)
+<script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        connection.on("ReceiveMessage", function (user, message) {
+            const chatContent = document.querySelector('.chat-content');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `<strong>${user}:</strong> ${message}`;
+            chatContent.appendChild(messageElement);
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+        document.querySelector('.chat-footer form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const messageInput = document.querySelector('.chat-footer input');
+            const message = messageInput.value;
+            const userName = document.getElementById('chat-header-name').textContent;
+
+            connection.invoke("SendMessage", userName, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            messageInput.value = '';
+        });
+    </script>
 </body>
 </html>
