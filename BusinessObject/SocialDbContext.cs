@@ -7,6 +7,7 @@ namespace BusinessObject
 {
     public class SocialDbContext : IdentityDbContext<User>
     {
+        public SocialDbContext() { }
         public SocialDbContext(DbContextOptions<SocialDbContext> otp) : base(otp) { }
 
         public override DbSet<User> Users { get; set; }

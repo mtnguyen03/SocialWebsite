@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using DataAccess.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookApi.Repositories
 {
@@ -83,6 +84,11 @@ namespace BookApi.Repositories
                 await userManager.AddToRoleAsync(user, AppRole.User);
             }
             return result;
+        }
+
+        public async Task<List<User>> GetUsers()
+        {
+            return await userManager.Users.ToListAsync();
         }
     }
 }

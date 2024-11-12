@@ -24,7 +24,7 @@ namespace SocialFrontEnd
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DB")
                   );
             });
-
+            builder.Services.AddSignalR();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -66,7 +66,7 @@ namespace SocialFrontEnd
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.MapHub<ChatHub>("/chathub");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

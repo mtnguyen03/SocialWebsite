@@ -1,4 +1,5 @@
 ﻿using BookApi.Repositories;
+using BusinessObject;
 using BusinessObject.Authen;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,5 +38,16 @@ namespace SocialApi.Controllers
             }
             return Ok(result);
         }
+        [HttpGet("GetUser")]
+        public async Task<IActionResult> GetUser()
+        {
+            var result = await arepository.GetUsers();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+        
     }
 }
