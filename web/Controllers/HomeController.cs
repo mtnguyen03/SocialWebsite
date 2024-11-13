@@ -3,8 +3,7 @@ using System.Diagnostics;
 using SocialFrontEnd.Models;
 using Microsoft.AspNetCore.Identity;
 using BusinessObject;
-using Microsoft.AspNetCore.Authorization;
-using DataAccess.Helpers;
+
 
 namespace SocialFrontEnd.Controllers
 {

@@ -1,6 +1,8 @@
 
 using BookApi.Repositories;
 using BusinessObject;
+using DataAccess.IRepository;
+using DataAccess.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
@@ -22,7 +24,8 @@ namespace SocialApi
             //Add odata
             var modelBuilder = new ODataConventionModelBuilder();
             //modelBuilder.EntitySet<Category>("Categories");
-          
+            modelBuilder.EntitySet<User>("Users");
+
 
             builder.Services.AddHttpContextAccessor();
 
@@ -43,7 +46,8 @@ namespace SocialApi
             // life cycle DI: Addsington, addTransisent, addScope
             // add more scope here
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-           
+            builder.Services.AddScoped(typeof(SocialDbContext));
+            builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
             builder.Services.AddDbContext<SocialDbContext>(opt =>
             {
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DB")
@@ -85,7 +89,7 @@ namespace SocialApi
 
             app.UseODataBatching();
             app.UseRouting();
-            app.UseCors("AllowAllOrigins"); // Enable CORS policy
+            app.UseCors("AllowAllOrigins"); // Enable CORS policy https;;lohos888 --> 999
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();

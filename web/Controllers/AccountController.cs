@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
 using BusinessObject;
-using Microsoft.AspNetCore.Authorization;
 using SocialFrontEnd.Helper;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using Azure;
 using BusinessObject.Authen;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using SocialFrontEnd.Services.MailService;
 using SocialFrontEnd.Services.OtpService;
 
@@ -68,7 +62,7 @@ namespace SocialFrontEnd.Controllers
 
                     if (user != null)
                     {
-                        SetSession(token, user.UserName, user.Email);
+                        SetSession(token, user.UserName, user.Email,user.Id);
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToAction("Index", "Home");
                     }
@@ -214,8 +208,9 @@ namespace SocialFrontEnd.Controllers
             return View();
         }
 
-        private void SetSession(string token, string username, string userEmail)
+        private void SetSession(string token, string username, string userEmail, string Id)
         {
+            HttpContext.Session.SetString("Id", Id);
             HttpContext.Session.SetString("JwtToken", token);
             HttpContext.Session.SetString("Username", username);
             HttpContext.Session.SetString("Email", userEmail);
