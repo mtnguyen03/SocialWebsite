@@ -1,0 +1,101 @@
+﻿<a href="#" class="search-toggle dropdown-toggle" id="notification-drop" data-bs-toggle="dropdown">
+    <i class="ri-notification-4-line"></i>
+</a>
+<div class="sub-drop dropdown-menu" aria-labelledby="notification-drop">
+    <div class="card shadow-none m-0" id="notification-card">
+        <div class="card-header d-flex justify-content-between bg-primary">
+            <div class="header-title bg-primary">
+                <h5 class="mb-0 text-white">All Notifications</h5>
+            </div>
+            <small class="badge bg-light text-dark" id="notification-count">4</small>
+        </div>
+        <div class="card-body p-0" id="notification-container">
+            <!-- Notifications will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const userId = "@ViewBag.Id";
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Function to load notifications
+        function loadNotifications() {
+            // Check if userId is available
+            if (!userId) {
+                console.log("User ID not found in session.");
+                return;
+            }
+
+            $.ajax({
+                url: `https://socialapi20241113093259.azurewebsites.net/odata/Notifications?$filter=UserID eq '${userId}'`, // Use userId in URL
+                method: "GET",
+                success: function (response) {
+                    const notifications = response.value;
+                    const notificationContainer = $("#notification-container"); // Container for notifications
+                    notificationContainer.empty(); // Clear existing content
+
+                    // Update badge with notification count
+                    $("#notification-count").text(notifications.length);
+
+                    // Loop through notifications and append to dropdown
+                    notifications.forEach(notification => {
+                        const notificationItem = `
+                                <div class="iq-sub-card" data-id="${notification.NotificationID}">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <img class="avatar-40 rounded" src="${notification.Photo || '/images/user/default.jpg'}" alt="">
+                                        </div>
+                                        <div class="ms-3 w-100">
+                                            <h6 class="mb-0">${notification.Title}</h6>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="mb-0">${notification.MessageContent}</p>
+                                                <small class="float-right font-size-12">${notification.NotificationDate || 'Just Now'}</small>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-danger ms-2 delete-notification" data-id="${notification.NotificationID}">Delete</button>
+                                    </div>
+                                </div>
+                            `;
+                        notificationContainer.append(notificationItem);
+                    });
+                },
+                error: function (error) {
+                    console.log("Error fetching notifications:", error);
+                }
+            });
+        }
+
+        function deleteNotification(notificationId) {
+            $.ajax({
+                url: `https://socialapi20241113093259.azurewebsites.net/odata/Notifications/${notificationId}`, // Updated URL format
+                method: "DELETE",
+                success: function () {
+                    // Remove the notification from the UI
+                    $(`[data-id="${notificationId}"]`).remove();
+
+                    // Update the notification count badge
+                    const currentCount = parseInt($("#notification-count").text(), 10);
+                    $("#notification-count").text(currentCount - 1);
+                },
+                error: function (error) {
+                    console.log("Error deleting notification:", error);
+                }
+            });
+        }
+
+
+        // Load notifications when the dropdown is toggled
+        $("#notification-drop").on("click", function () {
+            loadNotifications();
+        });
+
+        // Event delegation for delete button click
+        $("#notification-container").on("click", ".delete-notification", function () {
+            const notificationId = $(this).data("id");
+            deleteNotification(notificationId);
+        });
+    });
+</script>

@@ -6,9 +6,10 @@ using BusinessObject;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.Helpers;
 
+
 namespace SocialFrontEnd.Controllers
 {
-    //[Authorize(AppRole.User)]
+    [Authorize(AppRole.User)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -27,7 +28,7 @@ namespace SocialFrontEnd.Controllers
             var username = HttpContext.Session.GetString("Username");
             var email = HttpContext.Session.GetString("Email");
             ViewBag.Username = username;
-
+            ViewBag.Id = HttpContext.Session.GetString("Id");
             return View();
         }
 
