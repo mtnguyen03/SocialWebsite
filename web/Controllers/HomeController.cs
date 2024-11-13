@@ -3,11 +3,13 @@ using System.Diagnostics;
 using SocialFrontEnd.Models;
 using Microsoft.AspNetCore.Identity;
 using BusinessObject;
+using Microsoft.AspNetCore.Authorization;
+using DataAccess.Helpers;
 
 
 namespace SocialFrontEnd.Controllers
 {
-    //[Authorize(AppRole.User)]
+    [Authorize(AppRole.User)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
