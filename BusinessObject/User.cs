@@ -16,11 +16,10 @@ namespace BusinessObject
         public override string? Email { get; set; }
 
         [StringLength(100, ErrorMessage = "Full Name cannot be longer than 100 characters.")]
-        [RegularExpression(@"^[\p{L}\p{M}]+(\s[\p{L}\p{M}]+)*$", ErrorMessage = "Full Name cannot contain special characters.")]
+        [RegularExpression(@"^[a-zA-Z\p{L}\p{M}]+(?:\s[a-zA-Z\p{L}\p{M}]+)*$", ErrorMessage = "Full Name cannot contain special characters.")]
         public string? FullName { get; set; }
 
         [StringLength(250, ErrorMessage = "Address cannot be longer than 250 characters.")]
-        [RegularExpression(@"^[\p{L}\p{M}\d\s,.-]+$", ErrorMessage = "Address cannot contain special characters other than letters, numbers, spaces, commas, periods, and dashes, and only one space between words is allowed.")]
         public string? Address { get; set; }
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]
