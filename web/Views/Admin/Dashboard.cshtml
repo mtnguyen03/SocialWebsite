@@ -1,0 +1,162 @@
+@model IEnumerable<SocialFrontEnd.Models.UserModel>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    .list-user-action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .list-user-action .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        font-size: 13px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .list-user-action .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-view {
+        color: #0d6efd;
+        background-color: #e7f1ff !important;
+    }
+
+    .btn-edit {
+        color: #198754;
+        background-color: #e8f5e9 !important;
+    }
+
+    .btn-delete {
+        color: #dc3545;
+        background-color: #ffebee !important;
+    }
+
+    .list-user-action i {
+        font-size: 16px;
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Search Box -->
+    <div class="chat-searchbar mb-4">
+        <div class="form-group chat-search-data m-0">
+            <input type="text" class="form-control round" id="chat-search" placeholder="Search user">
+            <i class="ri-search-line"></i>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white p-3">
+                <h3>@Model.Count()</h3>
+                <p class="mb-0">Number of accounts</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Table -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">User managemnet</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@(string.IsNullOrEmpty(user.PhotoUrl) ? "/images/user/1.jpg" : user.PhotoUrl)" 
+                                         alt="user" class="rounded-circle avatar-40">
+                                </td>
+                                <td>@user.UserName</td>
+                                <td>@user.Email</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Role</td>
+                                <td>
+                                    <div class="list-user-action">
+                                        <button type="button" class="btn btn-sm btn-view" 
+                                                data-bs-toggle="tooltip" data-bs-placement="top" title="View"
+                                                onclick="window.location.href='@Url.Action("UserDetails", new { email = user.Email })'">
+                                            <i class="ri-eye-line"></i>
+                                            View
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-edit"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Edit" 
+                                                onclick="window.location.href='@Url.Action("Edit", new { email = user.Email })'">
+                                            <i class="ri-pencil-line"></i>
+                                            Edit
+                                        </button>
+                                        <form asp-action="Delete" asp-route-email="@user.Email" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-delete"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
+                                                    onclick="return confirm('Do you want to delete?')">
+                                                <i class="ri-delete-bin-line"></i>
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Kích hoạt tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Code search đã có từ trước
+        document.getElementById('chat-search').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let table = document.getElementById('userTable');
+            let tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 1; j < td.length - 1; j++) {
+                    let cell = td[j];
+                    if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                tr[i].style.display = found ? '' : 'none';
+            }
+        });
+    </script>
+} 

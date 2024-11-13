@@ -1,0 +1,56 @@
+@model IEnumerable<SocialFrontEnd.Models.UserModel>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <div class="header-title">
+                    <h4 class="card-title">Quản lý người dùng</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ảnh đại diện</th>
+                                <th>Tên người dùng</th>
+                                <th>Email</th>
+                                <th>Họ tên</th>
+                                <th>Vai trò</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@(string.IsNullOrEmpty(user.PhotoUrl) ? "/images/user/1.jpg" : user.PhotoUrl)" 
+                                             alt="user" class="rounded-circle avatar-40">
+                                    </td>
+                                    <td>@user.UserName</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.FullName</td>
+                                    <td>@user.Role</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a asp-action="Edit" asp-route-email="@user.Email" class="btn btn-primary btn-sm me-2">
+                                                <i class="ri-pencil-line"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-email="@user.Email" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

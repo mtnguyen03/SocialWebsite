@@ -1,6 +1,7 @@
-
 using BookApi.Repositories;
 using BusinessObject;
+using DataAccess.IRepository;
+using DataAccess.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
@@ -43,7 +44,7 @@ namespace SocialApi
             // life cycle DI: Addsington, addTransisent, addScope
             // add more scope here
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-           
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddDbContext<SocialDbContext>(opt =>
             {
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DB")
