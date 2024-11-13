@@ -48,7 +48,7 @@ namespace SocialFrontEnd.Controllers
 
             var client = _httpClientFactory.CreateClient("default");
 
-            var response = await client.PostAsync("https://localhost:7055/api/Accounts/SignIn",
+            var response = await client.PostAsync("https://socialapi20241113093259.azurewebsites.net/api/Accounts/SignIn",
                 new StringContent(jsonData, Encoding.UTF8, "application/json"));
 
             if (response.IsSuccessStatusCode)
@@ -62,8 +62,10 @@ namespace SocialFrontEnd.Controllers
 
                     if (user != null)
                     {
-                        SetSession(token, user.UserName, user.Email,user.Id);
+                       
+                        SetSession(token, user.UserName, user.Email, user.Id);
                         await _signInManager.SignInAsync(user, isPersistent: false);
+                        ViewBag.Id = user.Id;
                         return RedirectToAction("Index", "Home");
                     }
                     else
@@ -119,10 +121,10 @@ namespace SocialFrontEnd.Controllers
             if (!isOtpValid)
             {
                 ModelState.AddModelError(string.Empty, "Invalid OTP. Please try again.");
-                return View(model); 
+                return View(model);
             }
             return Redirect($"/Account/ResetPassword?email={model.Email}");
-          
+
         }
 
         [HttpPost]
@@ -130,28 +132,28 @@ namespace SocialFrontEnd.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model); 
+                return View(model);
             }
 
-         
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "User with this email does not exist.");
-                return View(model); 
+                return View(model);
             }
 
-          
+
             var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             if (resetToken == null)
             {
                 ModelState.AddModelError(string.Empty, "Failed to generate reset token.");
-                return View(model); 
+                return View(model);
             }
 
 
             var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
-            if (!result.Succeeded) 
+            if (!result.Succeeded)
             {
                 ModelState.AddModelError(string.Empty, "Failed to reset the password. Please try again.");
                 return Redirect($"/Account/ResetPassword?email={model.Email}");
@@ -178,7 +180,7 @@ namespace SocialFrontEnd.Controllers
                     return View();
                 }
 
-             
+
                 var signUpModel = new SignUpModel
                 {
                     FullName = fullName,
@@ -189,14 +191,14 @@ namespace SocialFrontEnd.Controllers
 
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("https://localhost:7055/api/Accounts/SignUp");
+                    client.BaseAddress = new Uri("https://socialapi20241113093259.azurewebsites.net/api/Accounts/SignUp");
 
-                
+
                     var response = await client.PostAsJsonAsync("SignUp", signUpModel);
 
                     if (response.IsSuccessStatusCode)
                     {
-              
+
                         return RedirectToAction("Login", "Account");
                     }
                     else
@@ -214,6 +216,7 @@ namespace SocialFrontEnd.Controllers
             HttpContext.Session.SetString("JwtToken", token);
             HttpContext.Session.SetString("Username", username);
             HttpContext.Session.SetString("Email", userEmail);
+          
         }
         public async Task<IActionResult> SignOut()
         {

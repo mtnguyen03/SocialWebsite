@@ -26,7 +26,7 @@ namespace SocialFrontEnd.Controllers
             var username = HttpContext.Session.GetString("Username");
             var email = HttpContext.Session.GetString("Email");
             ViewBag.Username = username;
-
+            ViewBag.Id = HttpContext.Session.GetString("Id");
             return View();
         }
 

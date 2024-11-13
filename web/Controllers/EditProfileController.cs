@@ -30,9 +30,9 @@ namespace SocialFrontEnd.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            //string str = "https://localhost:7055/odata/Profiles?filter=Id eq '" + id + "'";
-            //string str = "https://localhost:7055/odata/Profiles('" + id + "')";
-            string str = "https://localhost:7055/api/Profiles/" + id;
+            //string str = "https://socialapi20241113093259.azurewebsites.net/odata/Profiles?filter=Id eq '" + id + "'";
+            //string str = "https://socialapi20241113093259.azurewebsites.net/odata/Profiles('" + id + "')";
+            string str = "https://socialapi20241113093259.azurewebsites.net/api/Profiles/" + id;
             HttpResponseMessage res = await _httpClient.GetAsync(str);
             if (!res.IsSuccessStatusCode)
             {
@@ -55,8 +55,8 @@ namespace SocialFrontEnd.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            //   string str = "https://localhost:7055/odata/Profiles('" + id + "')";
-            string str = "https://localhost:7055/api/Profiles/" + id;
+            //   string str = "https://socialapi20241113093259.azurewebsites.net/odata/Profiles('" + id + "')";
+            string str = "https://socialapi20241113093259.azurewebsites.net/api/Profiles/" + id;
             var json = JsonConvert.SerializeObject(user);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             HttpResponseMessage res = await _httpClient.PutAsync(str, data);
@@ -74,3 +74,4 @@ namespace SocialFrontEnd.Controllers
 
     }
 }
+s

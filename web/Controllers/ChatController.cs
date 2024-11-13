@@ -19,7 +19,7 @@ namespace SocialFrontEnd.Controllers
         public async Task<IActionResult> Index()
         {
             var client = _httpClientFactory.CreateClient("default");
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7055/api/Accounts/GetUser");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://socialapi20241113093259.azurewebsites.net/api/Accounts/GetUser");
 
             var response = await client.SendAsync(request);
 

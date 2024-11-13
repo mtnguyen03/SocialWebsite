@@ -25,7 +25,8 @@ namespace SocialApi
             var modelBuilder = new ODataConventionModelBuilder();
             //modelBuilder.EntitySet<Category>("Categories");
             modelBuilder.EntitySet<User>("Users");
-
+            modelBuilder.EntitySet<Notification>("Notifications");
+            
 
             builder.Services.AddHttpContextAccessor();
 
@@ -48,6 +49,7 @@ namespace SocialApi
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped(typeof(SocialDbContext));
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddDbContext<SocialDbContext>(opt =>
             {
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DB")
